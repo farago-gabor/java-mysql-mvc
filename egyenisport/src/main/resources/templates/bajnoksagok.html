@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bajnokságok kezelése</title>
+    <link rel="stylesheet" href="CSS/nav.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav>
+    <a href="/home">Kezdőlap</a>
+    <a href="/versenyzok">Versenyzők</a>
+    <a href="/bajnoksagok" class="active">Bajnokságok</a>
+    <a href="/merkozesek">Mérkőzések</a>
+    <!-- Ha be van jelentkezve a felhasználó -->
+    <div th:if="${user != null}">
+        <a href="/logout">Kijelentkezés</a>
+    </div>
+
+    <!-- Ha nincs bejelentkezve a felhasználó -->
+    <div th:unless="${user != null}">
+        <a href="/login">Bejelentkezés</a>
+        <a href="/register">Regisztráció</a>
+    </div>
+</nav>
+
+<h2>Bajnokságok listája</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Név</th>
+            <th>Kezdő dátum</th>
+            <th>Befejező dátum</th>
+            <th>Helyszín</th>
+            <th>Meghívásos</th>
+            <th th:if="${user != null && user.getJogosultsag() == 'admin'}">Műveletek</th>
+        </tr>
+    </thead>
+    <tbody th:each="bajnoksag: ${bajnoksagok}">
+        <tr th:if="${user == null || user.getJogosultsag() != 'admin'}">
+            <td th:text="${bajnoksag.getNev()}">Bajnokság 1</td>
+            <td th:text="${#dates.format(bajnoksag.getKezdoDatum(), 'yyyy-MM-dd')}">2024-01-01</td>
+            <td th:text="${#dates.format(bajnoksag.getBefejezoDatum(), 'yyyy-MM-dd')}">2024-01-05</td>
+            <td th:text="${bajnoksag.getHelyszin()}">Budapest</td>
+            <td th:text="${bajnoksag.isMeghivasos() ? 'Igen' : 'Nem'}">Igen</td>
+        </tr>
+
+        <tr th:if="${user != null && user.getJogosultsag() == 'admin'}">
+            <form th:action="@{/bajnoksagok/modosit}" method="post">
+                <td><input type="text" name="nev" th:value="${bajnoksag.getNev()}" /></td>
+                <td><input type="date" name="kezdo_datum" th:value="${#dates.format(bajnoksag.getKezdoDatum(), 'yyyy-MM-dd')}" /></td>
+                <td><input type="date" name="befejezo_datum" th:value="${#dates.format(bajnoksag.getBefejezoDatum(), 'yyyy-MM-dd')}" /></td>
+                <td><input type="text" name="helyszin" th:value="${bajnoksag.getHelyszin()}" /></td>
+                <td>
+                    <select name="meghivasos">
+                        <option th:selected="${bajnoksag.isMeghivasos()}" value="true">Igen</option>
+                        <option th:selected="${!bajnoksag.isMeghivasos()}" value="false">Nem</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="submit">Módosítás</button>
+                </td>
+                <input type="hidden" name="bId" th:value="${bajnoksag.getBId()}" />
+            </form>
+            <form th:action="@{/bajnoksagok/torol}" method="post">
+                <td>
+                    <input type="hidden" name="bId" th:value="${bajnoksag.getBId()}" />
+                    <button type="submit">Törlés</button>
+                </td>
+            </form>
+        </tr>
+
+    </tbody>
+</table>
+
+<div th:if="${user != null && user.getJogosultsag() == 'admin'}">
+    <h3>Új bajnokság felvétele</h3>
+    <form action="/bajnoksagok" method="POST">
+        <label for="nev">Név:</label>
+        <input type="text" id="nev" name="nev" required><br><br>
+
+        <label for="kezdo_datum">Kezdő dátum:</label>
+        <input type="date" id="kezdo_datum" name="kezdo_datum" required><br><br>
+
+        <label for="befejezo_datum">Befejező dátum:</label>
+        <input type="date" id="befejezo_datum" name="befejezo_datum" required><br><br>
+
+        <label for="helyszin">Helyszín:</label>
+        <input type="text" id="helyszin" name="helyszin" required><br><br>
+
+        <label for="meghivasos">Meghívásos:</label>
+        <select id="meghivasos" name="meghivasos" required>
+            <option value="true">Igen</option>
+            <option value="false">Nem</option>
+        </select><br><br>
+
+        <button type="submit">Bajnokság felvétele</button>
+    </form>
+</div>
+</body>
+</html>

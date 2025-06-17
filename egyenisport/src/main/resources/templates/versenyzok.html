@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Versenyzők kezelése</title>
+    <link rel="stylesheet" href="CSS/nav.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <a href="/home">Kezdőlap</a>
+        <a href="/versenyzok" class="active">Versenyzők</a>
+        <a href="/bajnoksagok">Bajnokságok</a>
+        <a href="/merkozesek">Mérkőzések</a>
+        <!-- Ha be van jelentkezve a felhasználó -->
+        <div th:if="${user != null}">
+            <a href="/logout">Kijelentkezés</a>
+        </div>
+        <!-- Ha nincs bejelentkezve a felhasználó -->
+        <div th:unless="${user != null}">
+            <a href="/login">Bejelentkezés</a>
+            <a href="/register">Regisztráció</a>
+        </div>
+    </nav>
+
+    <h2>Versenyzők listája</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Név</th>
+                <th>Születési dátum</th>
+                <th>Születési hely</th>
+                <th>Állampolgárság</th>
+                <th>Győzelmi arány</th>
+                <th>Aktív</th>
+                <th th:if="${user != null && user.getJogosultsag() == 'admin'}">Műveletek</th>
+            </tr>
+        </thead>
+        <tbody th:each="versenyzo: ${versenyzok}">
+            <tr th:if="${user == null || user.getJogosultsag() != 'admin'}">
+                <td th:text="${versenyzo.getNev()}">John Doe</td>
+                <td th:text="${#dates.format(versenyzo.getSzuletesiDatum(), 'yyyy-MM-dd')}">1990-01-01</td>
+                <td th:text="${versenyzo.getSzuletesiHely()}">Budapest</td>
+                <td th:text="${versenyzo.getAllampolgarsag()}">Magyar</td>
+                <td th:text="${versenyzo.getGyozelmiArany()*100}">80%</td>
+                <td th:text="${versenyzo.isAktiv() ? 'Igen' : 'Nem'}">Igen</td>
+                <td th:if="${user != null && user.getJogosultsag() == 'admin'}">
+                    <a href="/versenyzo/modosit/1">Módosítás</a> | 
+                    <a href="/versenyzo/torol/1">Törlés</a>
+                </td>
+            </tr>
+            <tr th:if="${user != null && user.getJogosultsag() == 'admin'}">
+                <form th:action="@{/versenyzok/modosit}" method="post">
+                <td><input type="text" name="nev" th:value="${versenyzo.getNev()}"></td>
+                <td><input type="date" name="szul_datum" th:value="${#dates.format(versenyzo.getSzuletesiDatum(), 'yyyy-MM-dd')}" /></td>
+                <td><input type="text" name="szul_hely" th:value="${versenyzo.getSzuletesiHely()}"></td>
+                <td><input type="text" name="allampolgarsag" th:value="${versenyzo.getAllampolgarsag()}"></td>
+                <td><input type="number" min="0" max="100" name="gyozelmi_arany" th:value="${versenyzo.getGyozelmiArany()*100}">%</td>
+                <td><select name="aktiv">
+                    <option th:selected="${versenyzo.isAktiv()}" value="true">Igen</option>
+                    <option th:selected="${!versenyzo.isAktiv()}" value="false">Nem</option>
+                </select></td>
+                <td>
+                    <input type="hidden" name="vId" th:value="${versenyzo.getVId()}" />
+                    <button type="submit">Módosítás</button>
+                </td>
+                </form>
+                <form th:action="@{/versenyzok/torol}" method="post">
+                    <td>
+                        <input type="hidden" name="vId" th:value="${versenyzo.getVId()}" />
+                        <button type="submit">Törlés</button>
+                    </td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+    <div th:if="${user != null && user.getJogosultsag() == 'admin'}">
+        <h3>Új versenyző felvétele</h3>
+        <form action="/versenyzo/hozzaad" method="POST">
+            <label for="nev">Név:</label>
+            <input type="text" id="nev" name="nev" required><br><br>
+
+            <label for="szuletesi_datum">Születési dátum:</label>
+            <input type="date" id="szuletesi_datum" name="szuletesi_datum" required><br><br>
+
+            <label for="szuletesi_hely">Születési hely:</label>
+            <input type="text" id="szuletesi_hely" name="szuletesi_hely" required><br><br>
+
+            <label for="allampolgarsag">Állampolgárság:</label>
+            <input type="text" id="allampolgarsag" name="allampolgarsag" required><br><br>
+
+            <label for="gyozelmi_arany">Győzelmi arány:</label>
+            <input type="number" id="gyozelmi_arany" name="gyozelmi_arany" min="0" max="100" required><br><br>
+
+            <label for="aktiv">Aktív:</label>
+            <select id="aktiv" name="aktiv" required>
+                <option value="true">Igen</option>
+                <option value="false">Nem</option>
+            </select><br><br>
+
+            <button type="submit">Versenyző felvétele</button>
+        </form>
+    </div>
+</body>
+</html>

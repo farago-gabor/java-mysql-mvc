@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kijelentkezés</title>
+</head>
+<body>
+
+<!-- Navigációs menü -->
+<nav>
+  <a href="/home">Kezdőlap</a>
+  <a href="/versenyzok">Versenyzők</a>
+  <a href="/bajnoksagok">Bajnokságok</a>
+  <a href="/merkozesek">Mérkőzések</a>
+  <a href="/login">Bejelentkezés</a> <!-- Bejelentkezés link -->
+</nav>
+
+<!-- Kijelentkezési üzenet -->
+<div>
+  <h1>Kijelentkezés sikeres!</h1>
+  <p>Sikeresen kijelentkeztél a rendszerből. Visszairányítunk a bejelentkezési oldalra.</p>
+  <p>Ha nem történik automatikus átirányítás, kattints <a href="/login">ide</a> a bejelentkezéshez.</p>
+</div>
+
+<!-- Automatikus átirányítás bejelentkezéshez 3 másodpercen belül -->
+<script>
+  setTimeout(function() {
+    window.location.href = "/login";
+  }, 3000); // 3000 ms = 3 másodperc
+</script>
+
+</body>
+</html>

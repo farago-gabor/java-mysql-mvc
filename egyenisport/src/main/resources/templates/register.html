@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felhasználó Regisztráció</title>
+    <link rel="stylesheet" href="CSS/nav.css">
+</head>
+<body>
+    <nav>
+        <a href="/home">Kezdőlap</a>
+        <a href="/versenyzok">Versenyzők</a>
+        <a href="/bajnoksagok">Bajnokságok</a>
+        <a href="/merkozesek">Mérkőzések</a>
+        <!-- Ha be van jelentkezve a felhasználó -->
+        <div th:if="${user != null}">
+            <a href="/logout">Kijelentkezés</a>
+        </div>
+
+        <!-- Ha nincs bejelentkezve a felhasználó -->
+        <div th:unless="${user != null}">
+            <a href="/login">Bejelentkezés</a>
+            <a href="/register" class="active">Regisztráció</a>
+        </div>
+    </nav>
+
+    <h2>Felhasználó Regisztráció</h2>
+    <form action="/register" method="POST">
+        <label for="felhasznalonev">Felhasználónév:</label>
+        <input type="text" id="felhasznalonev" name="felhasznalonev" required><br><br>
+
+        <label for="jelszo">Jelszó:</label>
+        <input type="password" id="jelszo" name="jelszo" required><br><br>
+
+        <label for="nev">Név:</label>
+        <input type="text" id="nev" name="nev" required><br><br>
+
+        <!--<label for="jogosultsag">Jogosultság:</label>
+        <select id="jogosultsag" name="jogosultsag" required>
+            <option value="admin">Adminisztrátor</option>
+            <option value="versenyzo">Versenyző</option>
+            <option value="nezo">Néző</option>
+        </select>--><br><br>
+
+        <button type="submit">Regisztráció</button>
+    </form>
+
+    <div th:if="${error}" style="color:red;">
+        <p th:text="${error}"></p>
+    </div>
+</body>
+</html>
